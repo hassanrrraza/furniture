@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:furniture_app/src/features/favorites/application/favorite_items_notifier.dart';
 import 'package:furniture_app/src/features/home/data/datasources/mock_furniture_data.dart';
 import 'package:furniture_app/src/features/home/domain/models/furniture_item.dart';
 
@@ -11,14 +13,16 @@ class FurnitureCategory {
   const FurnitureCategory({required this.name, this.icon});
 }
 
-class HomeScreen extends StatefulWidget {
+// Make HomeScreen a ConsumerStatefulWidget
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+// Change _HomeScreenState to extend ConsumerState<HomeScreen>
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _selectedCategory = 'All';
 
   // Placeholder data - replace with actual data source/state management
@@ -38,14 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .where((item) =>
             item.category.toLowerCase() == _selectedCategory.toLowerCase())
         .toList();
-  }
-
-  void _onFavoriteToggle(String itemImagePath) {
-    setState(() {
-      final item =
-          mockFurnitureItems.firstWhere((i) => i.imagePath == itemImagePath);
-      item.isFavorite = !item.isFavorite;
-    });
   }
 
   @override
@@ -185,6 +181,12 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
+          // Watch the provider to get the list of favorite items
+          final favoriteItems = ref.watch(favoriteItemsProvider);
+          // Determine if the current item is a favorite by checking its presence in the watched list
+          final bool isItemFavorite = favoriteItems
+              .any((favItem) => favItem.imagePath == item.imagePath);
+
           return Card(
             clipBehavior:
                 Clip.antiAlias, // Ensures image respects card's rounded corners
@@ -235,14 +237,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       IconButton(
                         icon: Icon(
-                          item.isFavorite
+                          isItemFavorite
                               ? Icons.favorite
                               : Icons.favorite_border,
-                          color: item.isFavorite
+                          color: isItemFavorite
                               ? theme.colorScheme.primary
                               : theme.colorScheme.outline,
                         ),
-                        onPressed: () => _onFavoriteToggle(item.imagePath),
+                        onPressed: () {
+                          // Call the notifier method to toggle favorite status
+                          ref
+                              .read(favoriteItemsProvider.notifier)
+                              .toggleFavorite(item);
+                        },
                         visualDensity: VisualDensity.compact,
                         padding: EdgeInsets.zero,
                       ),
