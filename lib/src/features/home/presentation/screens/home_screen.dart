@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:furniture_app/src/features/home/data/datasources/mock_furniture_data.dart';
+import 'package:furniture_app/src/features/home/domain/models/furniture_item.dart';
 
 // Placeholder data models (we'll refine these)
 class FurnitureCategory {
@@ -7,20 +9,6 @@ class FurnitureCategory {
   // final String? customIconPath; // For SVG/PNG icons
 
   const FurnitureCategory({required this.name, this.icon});
-}
-
-class FurnitureItem {
-  final String id;
-  final String name;
-  final String imagePath;
-  bool isFavorite;
-
-  FurnitureItem({
-    required this.id,
-    required this.name,
-    required this.imagePath,
-    this.isFavorite = false,
-  });
 }
 
 class HomeScreen extends StatefulWidget {
@@ -43,38 +31,19 @@ class _HomeScreenState extends State<HomeScreen> {
     const FurnitureCategory(name: 'Lamps', icon: Icons.lightbulb_outline),
   ];
 
-  final List<FurnitureItem> _items = [
-    FurnitureItem(
-        id: '1',
-        name: 'Modern Wardrobe',
-        imagePath: 'assets/images/furniture_wardrobe_1.png'),
-    FurnitureItem(
-        id: '2',
-        name: 'Classic Armchair',
-        imagePath: 'assets/images/furniture_armchair_grey.png'),
-    FurnitureItem(
-        id: '3',
-        name: 'Comfy Single Chair',
-        imagePath: 'assets/images/furniture_armchair_single_grey.png'),
-    FurnitureItem(
-        id: '4',
-        name: 'Elegant Wardrobe',
-        imagePath: 'assets/images/furniture_wardrobe_2.png'),
-    // Add more items
-  ];
-
   List<FurnitureItem> get _filteredItems {
-    if (_selectedCategory == 'All') return _items;
-    // This is a naive filter, categories and items need better linking in a real app
-    return _items
+    if (_selectedCategory == 'All') return mockFurnitureItems;
+    // Updated filter logic to use item.category
+    return mockFurnitureItems
         .where((item) =>
-            item.name.toLowerCase().contains(_selectedCategory.toLowerCase()))
+            item.category.toLowerCase() == _selectedCategory.toLowerCase())
         .toList();
   }
 
-  void _onFavoriteToggle(String itemId) {
+  void _onFavoriteToggle(String itemImagePath) {
     setState(() {
-      final item = _items.firstWhere((i) => i.id == itemId);
+      final item =
+          mockFurnitureItems.firstWhere((i) => i.imagePath == itemImagePath);
       item.isFavorite = !item.isFavorite;
     });
   }
@@ -173,8 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedCategory = category.name;
                   });
                 },
-                backgroundColor: theme
-                    .colorScheme.surfaceContainerHighest, // Light grey for unselected
+                backgroundColor: theme.colorScheme
+                    .surfaceContainerHighest, // Light grey for unselected
                 selectedColor:
                     theme.colorScheme.primary, // Primary color for selected
                 labelStyle: TextStyle(
@@ -236,8 +205,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       fit:
                           BoxFit.contain, // Or BoxFit.cover depending on images
                       errorBuilder: (context, error, stackTrace) {
+                        print(
+                            "Error loading image: ${item.imagePath}, Error: $error");
                         return const Center(
-                            child: Icon(Icons.broken_image, size: 40));
+                            child: Icon(
+                          Icons.broken_image,
+                          size: 40,
+                          color: Colors.red,
+                        ));
                       },
                     ),
                   ),
@@ -245,20 +220,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.end, // Heart icon to the right
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Text(item.name, style: theme.textTheme.titleSmall), // Optional: Item name if design had it
+                      Expanded(
+                        child: Text(
+                          item.name,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                       IconButton(
                         icon: Icon(
                           item.isFavorite
                               ? Icons.favorite
                               : Icons.favorite_border,
                           color: item.isFavorite
-                              ? theme.colorScheme.error
-                              : theme.disabledColor,
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.outline,
                         ),
-                        onPressed: () => _onFavoriteToggle(item.id),
+                        onPressed: () => _onFavoriteToggle(item.imagePath),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
                       ),
                     ],
                   ),

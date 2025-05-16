@@ -62,6 +62,10 @@ flutter:
   assets:
     - assets/images/ # This line includes all files in the assets/images/ directory
     - assets/icons/ # Adding icons directory
+    - assets/furniture/beds/
+    - assets/furniture/chairs/
+    - assets/furniture/sofa/
+    - assets/furniture/lamps/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
