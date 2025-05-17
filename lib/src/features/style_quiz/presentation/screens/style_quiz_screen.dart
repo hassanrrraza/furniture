@@ -177,90 +177,125 @@ class _StyleQuizScreenState extends State<StyleQuizScreen> {
     );
   }
 
+  Widget _buildQuizContent(
+      BuildContext context, ThemeData theme, QuizQuestion question) {
+    return Column(
+      key: ValueKey<int>(
+          _currentQuestionIndex), // Important for AnimatedSwitcher
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Question ${_currentQuestionIndex + 1}/${styleQuizQuestions.length}',
+          style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 15),
+        Container(
+          padding: const EdgeInsets.symmetric(
+              vertical: 24.0, horizontal: 16.0), // Increased vertical padding
+          decoration: BoxDecoration(
+              color: theme.colorScheme
+                  .surfaceContainerHighest, // Using a slightly different container color for variety
+              borderRadius:
+                  BorderRadius.circular(16.0), // Slightly larger radius
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ]),
+          child: Text(
+            question.questionText,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurface,
+              height: 1.3, // Improved line height for readability
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: 30),
+        Expanded(
+          child: ListView.builder(
+            itemCount: question.options.length,
+            itemBuilder: (context, index) {
+              final QuizOption option = question.options[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 7.0), // Slightly reduced vertical padding
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    foregroundColor: theme.colorScheme.onPrimaryContainer,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical:
+                            20), // Increased vertical padding for tap target
+                    textStyle: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.normal, height: 1.3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(12.0), // Consistent radius
+                    ),
+                    elevation: 3,
+                    shadowColor: theme.colorScheme.shadow.withOpacity(0.2),
+                  ),
+                  onPressed: () => _answerQuestion(option),
+                  child: Text(
+                    option.text,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final QuizQuestion currentQuestion =
-        styleQuizQuestions[_currentQuestionIndex];
+    final ThemeData theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Style Quiz'),
-        automaticallyImplyLeading: false, // To prevent back button during quiz
+        automaticallyImplyLeading: false,
+        backgroundColor: theme.colorScheme.surface, // Theme consistent AppBar
+        elevation: 1, // Subtle elevation
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.fromLTRB(
+            20.0, 10.0, 20.0, 20.0), // Adjusted top padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Progress Indicator
             LinearProgressIndicator(
               value: (_currentQuestionIndex + 1) / styleQuizQuestions.length,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
-              minHeight: 8,
+              backgroundColor: theme
+                  .colorScheme.surfaceContainerHighest, // Themed background
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              minHeight: 10, // Slightly thicker
+              borderRadius: BorderRadius.circular(
+                  5), // Rounded corners for the progress bar itself
             ),
-            const SizedBox(height: 20),
-            // Question Number
-            Text(
-              'Question ${_currentQuestionIndex + 1}/${styleQuizQuestions.length}',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(color: theme.colorScheme.primary),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 15),
-            // Question Text
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant,
-                  borderRadius: BorderRadius.circular(12.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    )
-                  ]),
-              child: Text(
-                currentQuestion.questionText,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Options
+            const SizedBox(height: 20), // Increased spacing after progress bar
             Expanded(
-              child: ListView.builder(
-                itemCount: currentQuestion.options.length,
-                itemBuilder: (context, index) {
-                  final QuizOption option = currentQuestion.options[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primaryContainer,
-                        foregroundColor: theme.colorScheme.onPrimaryContainer,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 18),
-                        textStyle: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.normal),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        elevation: 2,
-                      ),
-                      onPressed: () => _answerQuestion(option),
-                      child: Text(
-                        option.text,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+              child: AnimatedSwitcher(
+                duration:
+                    const Duration(milliseconds: 400), // Animation duration
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
                   );
                 },
+                child: _buildQuizContent(
+                    context, theme, styleQuizQuestions[_currentQuestionIndex]),
               ),
             ),
           ],
