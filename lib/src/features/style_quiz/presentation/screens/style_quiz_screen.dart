@@ -2,83 +2,110 @@ import 'package:flutter/material.dart';
 import 'package:furniture_app/src/features/style_quiz/domain/models/quiz_models.dart';
 import 'package:furniture_app/src/features/style_quiz/presentation/screens/suggestion_screen.dart';
 
-// Sample Quiz Data (6 questions)
-final List<QuizQuestion> _sampleQuizQuestions = [
+// New Quiz Questions Data
+final List<QuizQuestion> styleQuizQuestions = [
   QuizQuestion(
-    id: 'q1',
     questionText:
         'Which color palette are you most drawn to for your living space?',
     options: [
-      const QuizOption(
-          id: 'q1_opt1', text: 'Neutral tones (beige, grey, white)'),
-      const QuizOption(
-          id: 'q1_opt2', text: 'Earthy tones (brown, green, terracotta)'),
-      const QuizOption(
-          id: 'q1_opt3', text: 'Bold & vibrant colors (blue, yellow, red)'),
-      const QuizOption(
-          id: 'q1_opt4', text: 'Pastel shades (light pink, mint, baby blue)'),
+      QuizOption(
+          text: 'Crisp whites, cool greys, and bold black accents',
+          styleAffinity: StyleType.modern),
+      QuizOption(
+          text: 'Rich jewel tones, warm woods, and patterned fabrics',
+          styleAffinity: StyleType.classic),
+      QuizOption(
+          text: 'Soft neutrals, light woods, and a very clean look',
+          styleAffinity: StyleType.minimalist),
+      QuizOption(
+          text: 'Earthy tones, vibrant patterns, and a mix of textures',
+          styleAffinity: StyleType.bohemian),
     ],
   ),
   QuizQuestion(
-    id: 'q2',
-    questionText: 'What kind of materials do you prefer in furniture?',
+    questionText: 'What kind of materials and textures do you prefer?',
     options: [
-      const QuizOption(id: 'q2_opt1', text: 'Natural wood and stone'),
-      const QuizOption(id: 'q2_opt2', text: 'Metals (steel, brass, chrome)'),
-      const QuizOption(
-          id: 'q2_opt3', text: 'Soft fabrics (velvet, cotton, linen)'),
-      const QuizOption(id: 'q2_opt4', text: 'Leather and faux leather'),
+      QuizOption(
+          text: 'Sleek metal, glass, and smooth, polished surfaces',
+          styleAffinity: StyleType.modern),
+      QuizOption(
+          text: 'Velvet, silk, dark polished wood, and ornate carvings',
+          styleAffinity: StyleType.classic),
+      QuizOption(
+          text: 'Natural light wood, concrete, and simple, unadorned textiles',
+          styleAffinity: StyleType.minimalist),
+      QuizOption(
+          text: 'Rattan, macrame, layered rugs, and varied textiles',
+          styleAffinity: StyleType.bohemian),
     ],
   ),
   QuizQuestion(
-    id: 'q3',
-    questionText: 'Describe your ideal room atmosphere:',
+    questionText: 'Describe your ideal furniture shapes and silhouettes.',
     options: [
-      const QuizOption(id: 'q3_opt1', text: 'Cozy and comfortable'),
-      const QuizOption(id: 'q3_opt2', text: 'Minimalist and clean'),
-      const QuizOption(id: 'q3_opt3', text: 'Elegant and sophisticated'),
-      const QuizOption(id: 'q3_opt4', text: 'Eclectic and artistic'),
+      QuizOption(
+          text: 'Geometric shapes, clean lines, and functional forms',
+          styleAffinity: StyleType.modern),
+      QuizOption(
+          text:
+              'Elegant curves, detailed craftsmanship, and symmetrical designs',
+          styleAffinity: StyleType.classic),
+      QuizOption(
+          text: 'Utilitarian, simple, and as few pieces as necessary',
+          styleAffinity: StyleType.minimalist),
+      QuizOption(
+          text: 'Free-flowing, comfortable, and unique, often vintage pieces',
+          styleAffinity: StyleType.bohemian),
     ],
   ),
   QuizQuestion(
-    id: 'q4',
-    questionText: 'Which type of patterns do you like, if any?',
+    questionText: 'How do you feel about decorative items and accessories?',
     options: [
-      const QuizOption(id: 'q4_opt1', text: 'Solid colors, no patterns'),
-      const QuizOption(id: 'q4_opt2', text: 'Geometric patterns'),
-      const QuizOption(id: 'q4_opt3', text: 'Floral or botanical prints'),
-      const QuizOption(id: 'q4_opt4', text: 'Abstract or artistic patterns'),
+      QuizOption(
+          text: 'Minimal and impactful; a few statement pieces are enough',
+          styleAffinity: StyleType.modern),
+      QuizOption(
+          text: 'Antiques, classic art, and formal arrangements are key',
+          styleAffinity: StyleType.classic),
+      QuizOption(
+          text: 'Almost none; function is beauty, clutter is avoided',
+          styleAffinity: StyleType.minimalist),
+      QuizOption(
+          text: 'Lots! Plants, tapestries, and personal treasures tell a story',
+          styleAffinity: StyleType.bohemian),
     ],
   ),
   QuizQuestion(
-    id: 'q5',
-    questionText:
-        'How would you describe your preferred level of ornamentation?',
+    questionText: 'What overall atmosphere do you want to create?',
     options: [
-      const QuizOption(
-          id: 'q5_opt1', text: 'Very little, focus on function (Minimalist)'),
-      const QuizOption(
-          id: 'q5_opt2',
-          text: 'Some decorative elements, but not cluttered (Modern)'),
-      const QuizOption(
-          id: 'q5_opt3',
-          text: 'Rich details and ornamentation (Traditional/Classic)'),
-      const QuizOption(
-          id: 'q5_opt4',
-          text: 'Unique, handcrafted, or vintage pieces (Bohemian/Eclectic)'),
+      QuizOption(
+          text: 'Sophisticated, current, and uncluttered',
+          styleAffinity: StyleType.modern),
+      QuizOption(
+          text: 'Timeless, elegant, and formal',
+          styleAffinity: StyleType.classic),
+      QuizOption(
+          text: 'Calm, serene, and highly organized',
+          styleAffinity: StyleType.minimalist),
+      QuizOption(
+          text: 'Cozy, eclectic, and full of personality',
+          styleAffinity: StyleType.bohemian),
     ],
   ),
   QuizQuestion(
-    id: 'q6',
-    questionText:
-        'Which of these activities do you most enjoy doing in your living space?',
+    questionText: 'Which of these best describes your approach to patterns?',
     options: [
-      const QuizOption(id: 'q6_opt1', text: 'Relaxing and watching TV/movies'),
-      const QuizOption(
-          id: 'q6_opt2', text: 'Entertaining guests and socializing'),
-      const QuizOption(id: 'q6_opt3', text: 'Working or studying'),
-      const QuizOption(
-          id: 'q6_opt4', text: 'Reading or pursuing hobbies quietly'),
+      QuizOption(
+          text: 'Subtle textures or bold, graphic prints in moderation',
+          styleAffinity: StyleType.modern),
+      QuizOption(
+          text: 'Damask, brocade, and traditional motifs',
+          styleAffinity: StyleType.classic),
+      QuizOption(
+          text: 'Solid colors primarily; patterns are rare and simple',
+          styleAffinity: StyleType.minimalist),
+      QuizOption(
+          text: 'A vibrant mix of global-inspired patterns and prints',
+          styleAffinity: StyleType.bohemian),
     ],
   ),
 ];
@@ -92,136 +119,150 @@ class StyleQuizScreen extends StatefulWidget {
 
 class _StyleQuizScreenState extends State<StyleQuizScreen> {
   int _currentQuestionIndex = 0;
-  String? _selectedOptionId;
-  final Map<String, String> _answers = {}; // To store questionId: optionText
+  // Store votes for each style
+  final Map<StyleType, int> _styleVotes = {
+    StyleType.modern: 0,
+    StyleType.classic: 0,
+    StyleType.minimalist: 0,
+    StyleType.bohemian: 0,
+  };
+  // Store the actual answers if needed for display on suggestion screen
+  final List<Map<String, String>> _userAnswers = [];
 
-  void _handleOptionSelected(String optionId, String optionText) {
+  void _answerQuestion(QuizOption selectedOption) {
+    // Record the vote
     setState(() {
-      _selectedOptionId = optionId;
-      // Store the textual answer for the current question's ID
-      _answers[_sampleQuizQuestions[_currentQuestionIndex].id] = optionText;
-    });
-    // Auto-navigate after a brief delay to show selection
-    Future.delayed(const Duration(milliseconds: 300), () {
-      _nextQuestion();
+      _styleVotes[selectedOption.styleAffinity] =
+          (_styleVotes[selectedOption.styleAffinity] ?? 0) + 1;
+      _userAnswers.add({
+        'question': styleQuizQuestions[_currentQuestionIndex].questionText,
+        'answer': selectedOption.text,
+      });
+
+      if (_currentQuestionIndex < styleQuizQuestions.length - 1) {
+        _currentQuestionIndex++;
+      } else {
+        _navigateToSuggestionScreen();
+      }
     });
   }
 
-  void _nextQuestion() {
-    if (_selectedOptionId == null)
-      return; // Don't proceed if no option is selected
+  StyleType _determineDominantStyle() {
+    StyleType dominantStyle = StyleType.modern; // Default
+    int maxVotes = 0;
+    _styleVotes.forEach((style, votes) {
+      if (votes > maxVotes) {
+        maxVotes = votes;
+        dominantStyle = style;
+      } else if (votes == maxVotes) {
+        // Handle ties: for now, stick with the first one encountered or a predefined order.
+        // Example: Prefer Modern in a Modern-Classic tie if that's desired.
+        // This simple approach picks the one that appears first in the map iteration if counts are equal.
+        // A more sophisticated tie-breaking might involve secondary criteria or user choice.
+      }
+    });
+    return dominantStyle;
+  }
 
-    if (_currentQuestionIndex < _sampleQuizQuestions.length - 1) {
-      setState(() {
-        _currentQuestionIndex++;
-        _selectedOptionId = null; // Reset selection for the new question
-      });
-    } else {
-      // Quiz finished, navigate to suggestions
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SuggestionScreen(answers: _answers),
+  void _navigateToSuggestionScreen() {
+    final StyleType dominantStyle = _determineDominantStyle();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SuggestionScreen(
+          dominantStyle: dominantStyle,
+          quizAnswers: _userAnswers, // Pass the collected answers
         ),
-      );
-    }
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currentQuestion = _sampleQuizQuestions[_currentQuestionIndex];
-    final double progress =
-        (_currentQuestionIndex + 1) / _sampleQuizQuestions.length;
+    final QuizQuestion currentQuestion =
+        styleQuizQuestions[_currentQuestionIndex];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Style Quiz'),
-        automaticallyImplyLeading: false, // No back button for the quiz itself
+        automaticallyImplyLeading: false, // To prevent back button during quiz
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              'Question ${_currentQuestionIndex + 1} of ${_sampleQuizQuestions.length}',
-              style:
-                  theme.textTheme.titleSmall?.copyWith(color: theme.hintColor),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
+          children: [
+            // Progress Indicator
             LinearProgressIndicator(
-              value: progress,
-              backgroundColor: theme.colorScheme.surfaceVariant,
+              value: (_currentQuestionIndex + 1) / styleQuizQuestions.length,
+              backgroundColor: Colors.grey[300],
               valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
               minHeight: 8,
             ),
-            const SizedBox(height: 30),
-            Expanded(
-                child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currentQuestion.questionText,
-                    style: theme.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w500, height: 1.4),
-                  ),
-                  const SizedBox(height: 25),
-                  ...currentQuestion.options.map((option) {
-                    final bool isSelected = _selectedOptionId == option.id;
-                    return Card(
-                      elevation: isSelected ? 4.0 : 1.0,
-                      margin: const EdgeInsets.symmetric(vertical: 6.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        side: BorderSide(
-                          color: isSelected
-                              ? theme.primaryColor
-                              : theme.dividerColor,
-                          width: isSelected ? 2.0 : 1.0,
-                        ),
-                      ),
-                      child: InkWell(
-                        onTap: () =>
-                            _handleOptionSelected(option.id, option.text),
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16.0, horizontal: 16.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  option.text,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                    color: isSelected
-                                        ? theme.primaryColor
-                                        : theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                              ),
-                              if (isSelected)
-                                Icon(Icons.check_circle,
-                                    color: theme.primaryColor, size: 24),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ],
+            const SizedBox(height: 20),
+            // Question Number
+            Text(
+              'Question ${_currentQuestionIndex + 1}/${styleQuizQuestions.length}',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(color: theme.colorScheme.primary),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 15),
+            // Question Text
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ]),
+              child: Text(
+                currentQuestion.questionText,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
               ),
-            )),
-            // const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: _selectedOptionId != null ? _nextQuestion : null, // Enable if option selected
-            //   child: const Text('Next'),
-            // ),
+            ),
+            const SizedBox(height: 30),
+            // Options
+            Expanded(
+              child: ListView.builder(
+                itemCount: currentQuestion.options.length,
+                itemBuilder: (context, index) {
+                  final QuizOption option = currentQuestion.options[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        foregroundColor: theme.colorScheme.onPrimaryContainer,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 18),
+                        textStyle: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.normal),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        elevation: 2,
+                      ),
+                      onPressed: () => _answerQuestion(option),
+                      child: Text(
+                        option.text,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),

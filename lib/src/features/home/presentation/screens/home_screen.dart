@@ -4,16 +4,16 @@ import 'package:furniture_app/src/features/favorites/application/favorite_items_
 import 'package:furniture_app/src/features/home/data/datasources/mock_furniture_data.dart';
 import 'package:furniture_app/src/features/home/domain/models/furniture_item.dart';
 
-// Placeholder data models (we'll refine these)
-class FurnitureCategory {
+// Display model for categories in UI
+class DisplayCategory {
   final String name;
-  final IconData? icon; // For Material icons
-  // final String? customIconPath; // For SVG/PNG icons
+  final IconData? icon;
+  final ProductCategory productCategory; // Link to the enum for filtering
 
-  const FurnitureCategory({required this.name, this.icon});
+  const DisplayCategory(
+      {required this.name, this.icon, required this.productCategory});
 }
 
-// Make HomeScreen a ConsumerStatefulWidget
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,27 +21,49 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-// Change _HomeScreenState to extend ConsumerState<HomeScreen>
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  String _selectedCategory = 'All';
+  ProductCategory _selectedProductCategory = ProductCategory.all;
+  String _searchQuery = '';
 
-  // Placeholder data - replace with actual data source/state management
-  final List<FurnitureCategory> _categories = [
-    const FurnitureCategory(name: 'All'),
-    const FurnitureCategory(name: 'Chairs', icon: Icons.chair_outlined),
-    const FurnitureCategory(name: 'Beds', icon: Icons.bed_outlined),
-    const FurnitureCategory(
-        name: 'Sofa', icon: Icons.living_outlined), // Example icon
-    const FurnitureCategory(name: 'Lamps', icon: Icons.lightbulb_outline),
+  // Updated list of categories for display in ChoiceChips
+  final List<DisplayCategory> _displayCategories = [
+    const DisplayCategory(name: 'All', productCategory: ProductCategory.all),
+    const DisplayCategory(
+        name: 'Chairs',
+        icon: Icons.chair_outlined,
+        productCategory: ProductCategory.chairs),
+    const DisplayCategory(
+        name: 'Beds',
+        icon: Icons.bed_outlined,
+        productCategory: ProductCategory.beds),
+    const DisplayCategory(
+        name: 'Sofa',
+        icon: Icons.living_outlined,
+        productCategory: ProductCategory.sofa),
+    const DisplayCategory(
+        name: 'Lamps',
+        icon: Icons.lightbulb_outline,
+        productCategory: ProductCategory.lamps),
   ];
 
   List<FurnitureItem> get _filteredItems {
-    if (_selectedCategory == 'All') return mockFurnitureItems;
-    // Updated filter logic to use item.category
-    return mockFurnitureItems
-        .where((item) =>
-            item.category.toLowerCase() == _selectedCategory.toLowerCase())
-        .toList();
+    List<FurnitureItem> itemsByCategory;
+    if (_selectedProductCategory == ProductCategory.all) {
+      itemsByCategory = mockFurnitureItems;
+    } else {
+      itemsByCategory = mockFurnitureItems
+          .where((item) => item.productCategory == _selectedProductCategory)
+          .toList();
+    }
+
+    if (_searchQuery.isEmpty) {
+      return itemsByCategory;
+    } else {
+      return itemsByCategory
+          .where((item) =>
+              item.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+    }
   }
 
   @override
@@ -81,17 +103,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: TextField(
+        onChanged: (value) {
+          setState(() {
+            _searchQuery = value;
+          });
+        },
         decoration: InputDecoration(
           hintText: 'Search Furniture',
           prefixIcon: Icon(Icons.search, color: theme.hintColor),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: theme.hintColor),
+                  onPressed: () {
+                    setState(() {
+                      _searchQuery = '';
+                    });
+                  },
+                )
+              : null,
           filled: true,
-          fillColor: theme.colorScheme
-              .surfaceContainerHighest, // Lighter grey for search bar background
+          fillColor: theme.colorScheme.surfaceContainerHighest,
           contentPadding:
               const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none, // No border as per design
+            borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
@@ -102,10 +138,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             borderSide: BorderSide(color: theme.primaryColor, width: 1.5),
           ),
         ),
-        onChanged: (value) {
-          // TODO: Implement search logic
-          print('Searching for: $value');
-        },
       ),
     );
   }
@@ -118,16 +150,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          itemCount: _categories.length,
+          itemCount: _displayCategories.length,
           itemBuilder: (context, index) {
-            final category = _categories[index];
-            final bool isSelected = category.name == _selectedCategory;
+            final displayCategory = _displayCategories[index];
+            final bool isSelected =
+                displayCategory.productCategory == _selectedProductCategory;
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: ChoiceChip(
-                label: Text(category.name),
-                avatar: category.icon != null && category.name != 'All'
-                    ? Icon(category.icon,
+                label: Text(displayCategory.name),
+                avatar: displayCategory.icon != null &&
+                        displayCategory.productCategory != ProductCategory.all
+                    ? Icon(displayCategory.icon,
                         color: isSelected
                             ? Colors.white
                             : theme.colorScheme.onSurfaceVariant)
@@ -135,13 +169,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 selected: isSelected,
                 onSelected: (selected) {
                   setState(() {
-                    _selectedCategory = category.name;
+                    _selectedProductCategory = displayCategory.productCategory;
                   });
                 },
-                backgroundColor: theme.colorScheme
-                    .surfaceContainerHighest, // Light grey for unselected
-                selectedColor:
-                    theme.colorScheme.primary, // Primary color for selected
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                selectedColor: theme.colorScheme.primary,
                 labelStyle: TextStyle(
                   color: isSelected
                       ? Colors.white
@@ -150,7 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
-                  side: BorderSide.none, // No border for chips
+                  side: BorderSide.none,
                 ),
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12.0, vertical: 10.0),
@@ -165,8 +197,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildFurnitureGrid(ThemeData theme) {
     final items = _filteredItems;
     if (items.isEmpty) {
-      return const Expanded(
-        child: Center(child: Text('No items found for this category.')),
+      String message = 'No items found for this category.';
+      if (_searchQuery.isNotEmpty) {
+        message = "No results found for '$_searchQuery'";
+        final selectedCategoryForDisplay = _displayCategories.firstWhere(
+            (cat) => cat.productCategory == _selectedProductCategory);
+        if (_selectedProductCategory != ProductCategory.all) {
+          message += " in ${selectedCategoryForDisplay.name}";
+        }
+      } else if (_selectedProductCategory != ProductCategory.all) {
+        final selectedCategoryForDisplay = _displayCategories.firstWhere(
+            (cat) => cat.productCategory == _selectedProductCategory);
+        message = 'No items in ${selectedCategoryForDisplay.name} category.';
+      } else {
+        message = 'No furniture items available at the moment.';
+      }
+      return Expanded(
+        child: Center(child: Text(message)),
       );
     }
     return Expanded(
@@ -176,20 +223,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           crossAxisCount: 2,
           crossAxisSpacing: 16.0,
           mainAxisSpacing: 16.0,
-          childAspectRatio: 0.75, // Adjust for item card proportions
+          childAspectRatio: 0.75,
         ),
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
-          // Watch the provider to get the list of favorite items
           final favoriteItems = ref.watch(favoriteItemsProvider);
-          // Determine if the current item is a favorite by checking its presence in the watched list
           final bool isItemFavorite = favoriteItems
               .any((favItem) => favItem.imagePath == item.imagePath);
 
           return Card(
-            clipBehavior:
-                Clip.antiAlias, // Ensures image respects card's rounded corners
+            clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
@@ -199,13 +243,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 Expanded(
                   child: Container(
-                    color: Colors
-                        .grey[200], // Placeholder background for image area
+                    color: Colors.grey[200],
                     padding: const EdgeInsets.all(8.0),
                     child: Image.asset(
                       item.imagePath,
-                      fit:
-                          BoxFit.contain, // Or BoxFit.cover depending on images
+                      fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         print(
                             "Error loading image: ${item.imagePath}, Error: $error");
@@ -245,7 +287,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               : theme.colorScheme.outline,
                         ),
                         onPressed: () {
-                          // Call the notifier method to toggle favorite status
                           ref
                               .read(favoriteItemsProvider.notifier)
                               .toggleFavorite(item);

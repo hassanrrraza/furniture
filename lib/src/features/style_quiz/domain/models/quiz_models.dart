@@ -1,20 +1,28 @@
-class QuizOption {
-  final String id; // Unique ID for the option within a question (e.g., 'opt1', 'opt2')
-  final String text;
+// Defines the structure for quiz questions and options
 
-  const QuizOption({required this.id, required this.text});
+// Enum for the different furniture styles
+enum StyleType {
+  modern,
+  classic,
+  minimalist,
+  bohemian,
+}
+
+class QuizOption {
+  final String text;
+  final StyleType styleAffinity; // Each option contributes to a specific style
+
+  QuizOption({required this.text, required this.styleAffinity});
 }
 
 class QuizQuestion {
-  final String id; // Unique ID for the question (e.g., 'q1', 'q2')
   final String questionText;
   final List<QuizOption> options;
-  // final String? imageUrl; // Optional: if questions sometimes have images
+  // final String? correctAnswer; // Not needed for style quiz, more for knowledge quizzes
 
-  const QuizQuestion({
-    required this.id,
+  QuizQuestion({
     required this.questionText,
     required this.options,
-    // this.imageUrl,
+    // this.correctAnswer,
   });
-} 
+}
