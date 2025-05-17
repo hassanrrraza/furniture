@@ -1,131 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:furniture_app/src/features/auth/presentation/screens/login_screen.dart'; // Import LoginScreen
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  // TODO: Fetch actual user data (name, email) from a service/state
-  final String _userName = 'John Abram';
-  final String _userEmail = 'johnabram@gmail.com';
-  final String _firstName = 'John';
-  final String _lastName = 'Abram';
+  // Mock data for UI display
+  final String _firstName = 'Anas';
+  final String _lastName = 'Khan';
+  final String _email = 'anas@gmail.com';
 
+  // Placeholder for logout functionality
   void _handleLogout(BuildContext context) {
-    // TODO: Implement actual logout logic (clear session, navigate to Login)
-    print('Logout Tapped');
-    // Example: Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => LoginScreen()), (route) => false);
+    // In a real app, you'd clear user session, navigate to login, etc.
+    print('Logout tapped - Navigating to LoginScreen');
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // This assumes ProfileScreen is pushed onto the stack.
-            // If it's a root tab, different navigation might be needed or no back arrow.
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              // Potentially navigate to home if it's a tab and we want to mimic back to home
-              // For now, this handles cases where it might be pushed.
-            }
-          },
-        ),
-        title: const Text('My Profile'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.grey[300], // Placeholder color
-              // backgroundImage: NetworkImage('USER_AVATAR_URL'), // TODO: Add user avatar image
-              child: Text(
-                _userName.isNotEmpty
-                    ? _userName[0].toUpperCase()
-                    : 'U', // Placeholder initial
-                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-              ),
-            ),
-          ),
-        ],
-        // elevation: 0, // To match design if flat
-        // backgroundColor: theme.scaffoldBackgroundColor, // To match design if flat
-        // foregroundColor: theme.colorScheme.onSurface, // To match design if flat
+        title: const Text('Profile'),
+        // If this screen is always accessed via bottom nav, consider removing back button:
+        // automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              _userName,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+      body: Center(
+        // Center the content vertically and horizontally
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment:
+                MainAxisAlignment.center, // Center column content
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: theme.colorScheme.primaryContainer,
+                child: Icon(
+                  Icons.person,
+                  size: 60,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
               ),
-            ),
-            Text(
-              _userEmail,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.hintColor,
+              const SizedBox(height: 20),
+              Text(
+                '$_firstName $_lastName',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 30),
-            _buildProfileDetailItem(theme,
-                label: 'First name', value: _firstName),
-            const SizedBox(height: 20),
-            _buildProfileDetailItem(theme,
-                label: 'Last name', value: _lastName),
-            const SizedBox(height: 20),
-            _buildProfileDetailItem(theme,
-                label: 'Email address', value: _userEmail),
-            const SizedBox(height: 50),
-            Center(
-              child: TextButton(
+              const SizedBox(height: 8),
+              Text(
+                _email,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40), // Spacer before logout button
+              ElevatedButton.icon(
+                icon: const Icon(Icons.logout),
+                label: const Text('LOGOUT'),
                 onPressed: () => _handleLogout(context),
-                child: Text(
-                  'LOGOUT',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.error, // Red color for logout
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme
+                      .colorScheme.errorContainer, // Or another distinct color
+                  foregroundColor: theme.colorScheme.onErrorContainer,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  textStyle: theme.textTheme.labelLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                  minimumSize:
+                      const Size(200, 50), // Ensure a good tap target size
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        12), // Consistent with app theme if applicable
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildProfileDetailItem(ThemeData theme,
-      {required String label, required String value}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest, // Light background for fields
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.labelSmall
-                ?.copyWith(color: theme.hintColor, fontSize: 12),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }
