@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:furniture_app/src/features/style_quiz/domain/models/quiz_models.dart';
-import 'package:furniture_app/src/features/style_quiz/presentation/screens/suggestion_screen.dart';
+import 'package:furniture_app/src/features/style_quiz/domain/models/style_information.dart';
+import 'package:furniture_app/src/features/style_quiz/domain/services/quiz_service.dart';
+import 'package:furniture_app/src/features/style_quiz/presentation/screens/enhanced_suggestion_screen.dart';
 
 // New Quiz Questions Data
 final List<QuizQuestion> styleQuizQuestions = [
@@ -147,31 +149,21 @@ class _StyleQuizScreenState extends State<StyleQuizScreen> {
     });
   }
 
-  StyleType _determineDominantStyle() {
-    StyleType dominantStyle = StyleType.modern; // Default
-    int maxVotes = 0;
-    _styleVotes.forEach((style, votes) {
-      if (votes > maxVotes) {
-        maxVotes = votes;
-        dominantStyle = style;
-      } else if (votes == maxVotes) {
-        // Handle ties: for now, stick with the first one encountered or a predefined order.
-        // Example: Prefer Modern in a Modern-Classic tie if that's desired.
-        // This simple approach picks the one that appears first in the map iteration if counts are equal.
-        // A more sophisticated tie-breaking might involve secondary criteria or user choice.
-      }
-    });
-    return dominantStyle;
-  }
+
 
   void _navigateToSuggestionScreen() {
-    final StyleType dominantStyle = _determineDominantStyle();
+    // Calculate comprehensive quiz results using our new service
+    final QuizResult quizResult = QuizService.calculateQuizResult(
+      styleVotes: _styleVotes,
+      userAnswers: _userAnswers,
+    );
+
+    // Navigate to the enhanced suggestion screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => SuggestionScreen(
-          dominantStyle: dominantStyle,
-          quizAnswers: _userAnswers, // Pass the collected answers
+        builder: (context) => EnhancedSuggestionScreen(
+          quizResult: quizResult,
         ),
       ),
     );
